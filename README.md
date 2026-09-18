@@ -24,7 +24,20 @@
 ## 仓库与资源
 
 `agibot/` 依赖仓库根目录的 `gr00t/`、`pyproject.toml` 和 `uv.lock`，不能独立运行。
-原始数据、转换数据和模型权重需单独准备，目录约定见操作手册。
+GitHub 保存代码、配置、文档和实机视频；转换数据及两个放置任务的 30k 推理模型在
+Hugging Face 公开提供，下载无需登录或申请读取权限。
+
+| 资源 | Hugging Face |
+|---|---|
+| 转换后的数据归档（约 7.17 GiB） | [GR00T-AgiBot-data](https://huggingface.co/datasets/Minth-Group/GR00T-AgiBot-data) |
+| xichong 右臂放置 30k 模型（约 16.27 GiB） | [xichong 模型](https://huggingface.co/Minth-Group/GR00T-G2-xichong-right-place-r0002-30k) |
+| zhewan 右臂放置 30k 模型（约 16.27 GiB） | [zhewan 模型](https://huggingface.co/Minth-Group/GR00T-G2-zhewan-right-place-r0003-30k) |
+
+下载、解压及骨干路径配置见 [操作手册第 2.5 节](agibot/README.md#25-从-hugging-face-下载)。
+文件分批上传，请在各仓库的 Files and versions 确认所需文件已出现；
+仓库首页可访问不代表权重已全部上传。
+原始数采数据、早期抓取模型及精确续训所需的优化器状态不在上述发布范围。
+公开可读不改变数据及模型的许可要求，具体见各资源页。
 
 ## NVIDIA 上游
 

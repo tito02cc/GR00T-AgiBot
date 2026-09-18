@@ -69,6 +69,76 @@ G2 原始数采数据清洗、GR00T 格式转换、模型训练与真机推理�
 `local_reports/`、`reports/`、`reviews/`、`evaluations/`、`live_shadow/` 保存本地运行产物。
 凭据通过环境变量或本地配置管理，不写入版本库；普通目录复制和压缩不会应用 `.gitignore`。
 
+### 2.5 从 Hugging Face 下载
+
+以下仓库公开可读，无需登录、配置 token 或申请读取权限。先按第 3 节安装环境，
+再从代码仓库根目录执行下载。示例中的 `token=False` 表示匿名下载。
+
+| 资源 | 仓库 | 大小 |
+|---|---|---|
+| 转换数据归档 | [GR00T-AgiBot-data](https://huggingface.co/datasets/Minth-Group/GR00T-AgiBot-data) | 约 7.17 GiB |
+| xichong 放置 30k 推理包 | [xichong 模型](https://huggingface.co/Minth-Group/GR00T-G2-xichong-right-place-r0002-30k) | 约 16.27 GiB |
+| zhewan 放置 30k 推理包 | [zhewan 模型](https://huggingface.co/Minth-Group/GR00T-G2-zhewan-right-place-r0003-30k) | 约 16.27 GiB |
+
+文件分批上传，下载前查看各仓库 **Files and versions**；尚未出现的文件需等待上传完成。
+仅运行一个放置任务时，只需下载对应模型，不必下载数据或另一个任务的模型。
+
+**转换数据：**
+
+```bash
+.venv/bin/python - <<'PY'
+from huggingface_hub import snapshot_download
+snapshot_download(
+    "Minth-Group/GR00T-AgiBot-data",
+    repo_type="dataset",
+    local_dir="downloads/groot-data",
+    token=False,
+)
+PY
+tar -xzf downloads/groot-data/Isaac-GR00T-converted-data.tar.gz --strip-components=1
+```
+
+解压结果为 `agibot/gr00t_data/`。先确认没有需要保留的同名文件，并预留下载包和
+解压数据的磁盘空间。归档包含历史转换版本，训练目录按第 2.3 节选择，不混合历史版本或 heldout。
+这不是原始数采数据，也不是直接供 `datasets.load_dataset()` 加载的仓库。
+
+**推理模型：选择一个任务下载，并配置本地骨干路径。**
+
+```bash
+.venv/bin/python - <<'PY'
+import subprocess
+import sys
+from pathlib import Path
+from huggingface_hub import snapshot_download
+
+task = "zhewan"  # xichong 或 zhewan，只下载所选任务
+packages = {
+    "xichong": (
+        "Minth-Group/GR00T-G2-xichong-right-place-r0002-30k",
+        "xichong_rplace_r0002_n1d7_checkpoint-30000",
+    ),
+    "zhewan": (
+        "Minth-Group/GR00T-G2-zhewan-right-place-r0003-30k",
+        "zhewan_rplace_r0003_n1d7_checkpoint-30000",
+    ),
+}
+repo_id, bundle_name = packages[task]
+bundle = Path("agibot/models") / bundle_name
+snapshot_download(repo_id, local_dir=str(bundle), token=False)
+subprocess.run([sys.executable, str(bundle / "configure_local_paths.py")], check=True)
+PY
+```
+
+每个推理包包含 `model/`、配套 `backbone/` 和路径配置脚本。模型服务器加载
+`model/`；`configure_local_paths.py` 只更新两个活动配置中的本地骨干路径，
+不改权重或归一化统计量。模型包搬迁后需再次执行该脚本。
+xichong 的 percentile 和 zhewan 的 min/max 配置必须各自保留。
+
+这些包不含 optimizer、scheduler、RNG，不能用于精确恢复原训练状态；
+原始数采数据和早期抓取模型也未在上述仓库发布。
+公开下载不改变许可：模型遵循资源页列出的 NVIDIA 许可，数据使用与再分发要求见数据集卡。
+这里的匿名下载说明只适用于上述发布仓库；重新获取 NVIDIA 上游基座时，仍按第 6.1 节办理其访问要求。
+
 ## 3. 安装与运行环境
 
 以下命令从完整仓库根目录执行，适用于训练／推理工作站：
