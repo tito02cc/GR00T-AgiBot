@@ -1,0 +1,64 @@
+schema_version = 1
+
+[task]
+id = "xichong_right_place_r0002"
+arm = "right"
+embodiment = "NEW_EMBODIMENT"
+prompt = "The right arm moves the gripped workpiece to the Xichong placement target, opens the right gripper to release the workpiece, then retracts the right arm to a safe pose."
+frequency_hz = 10.0
+action_horizon = 16
+
+[images]
+keys = ["head_color", "hand_right"]
+width = 640
+height = 480
+color = "RGB"
+dtype = "uint8"
+
+[state.right_eef]
+dimension = 9
+representation = "XYZ_ROT6D"
+rotation_6d_order = "r00_r01_r02_r10_r11_r12"
+pose_frame_label = "base_link_tf"
+
+[state.right_gripper]
+dimension = 1
+open = -0.785
+closed = 0.0
+
+[action.right_eef]
+dimension = 9
+type = "RELATIVE"
+representation = "XYZ_ROT6D"
+delta_indices = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+
+[action.right_gripper]
+dimension = 1
+type = "ABSOLUTE"
+
+[dataset]
+target_episode_count = 600
+videos_per_episode = 2
+
+[pipeline]
+arm = "right"
+modality_config = "agibot/configs/xichong_right_place_r0002_config.py"
+converter = "agibot/scripts/convert_g2_right_arm_to_gr00t.py"
+selector = "agibot/scripts/select_xichong_right_place_raw_subset.py"
+training_validator = "agibot/scripts/validate_g2_right_arm_gr00t_conversion.py"
+shadow_validator = "agibot/scripts/validate_g2_gr00t_shadow_adapter.py"
+training_preflight = "agibot/training/preflight_1xa10080.sh"
+training_launcher = "agibot/training/run_xichong_right_place_r0002_1xa10080.sh"
+inference_runner = "agibot/scripts/run_g2_groot_full_place_inference.py"
+recovery_runner = "agibot/scripts/recover_g2_groot_training_start.py"
+
+[training]
+run_id = "xichong_rplace_r0002_n1d7_e600_f10_h16_1xa10080_s30k_ckpt5k_v1"
+max_steps = 30000
+save_steps = 5000
+save_total_limit = 2
+
+[inference]
+completion = "place_release_retract"
+confirmation = "EXECUTE_G2_GROOT_FULL_RIGHT_ARM_PLACE_INFERENCE"
+minimum_retraction_m = 0.13

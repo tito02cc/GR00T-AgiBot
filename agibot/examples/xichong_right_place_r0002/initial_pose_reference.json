@@ -1,0 +1,84 @@
+{
+  "schema": "g2_groot_task_initial_pose_v1",
+  "task_id": "xichong_right_place_r0002",
+  "arm": "right",
+  "pose_frame": "base_link",
+  "quaternion_order": "xyzw",
+  "gripper_convention": {
+    "open": -0.785,
+    "closed": 0.0
+  },
+  "source_dataset": "agibot/gr00t_data/xichong_right_place_r0002_train_600",
+  "source_episode": {
+    "converted_episode_index": 258,
+    "raw_episode": "episode_000855",
+    "parquet_sha256": "d9e7037089a36d942ec867fe5a343b75843d0b321733e8898adefe2df151305b"
+  },
+  "reference": {
+    "right_eef_xyz_quaternion_xyzw": [
+      0.5013904571533203,
+      -0.1765020340681076,
+      1.0539140701293945,
+      0.5225321066771904,
+      -0.001878945069661977,
+      0.8526121988491865,
+      0.0030175205845201216
+    ],
+    "right_eef_xyz_rot6d": [
+      0.5013904571533203,
+      -0.1765020340681076,
+      1.0539140701293945,
+      -0.4539021849632263,
+      -0.0071091679856181145,
+      0.8910231590270996,
+      0.0031819313298910856,
+      -0.9999747276306152,
+      -0.0063575254753232
+    ],
+    "right_gripper": -0.005764516536146402
+  },
+  "training_start_statistics": {
+    "episodes": 600,
+    "xyz_median_m": [
+      0.501446545124054,
+      -0.17652424424886703,
+      1.053861677646637
+    ],
+    "xyz_q01_m": [
+      0.4975840300321579,
+      -0.17748308196663856,
+      1.053510422706604
+    ],
+    "xyz_q99_m": [
+      0.5016388994455337,
+      -0.17623424977064134,
+      1.0581166958808899
+    ],
+    "translation_from_median_mm": {
+      "median": 0.23595915820461955,
+      "p95": 2.9869467467146684,
+      "p99": 5.830420998568652
+    },
+    "rotation_from_mean_deg": {
+      "median": 0.14575379895014312,
+      "p95": 0.6852905756050006,
+      "p99": 3.4303223189436363
+    },
+    "right_gripper": {
+      "median": -0.005764516536146402,
+      "q01": -0.01152968779206276,
+      "q99": -0.0011526417220011353
+    },
+    "episodes_within_5mm_2deg_gripper_0p02": 586
+  },
+  "inference_start_gate": {
+    "translation_m": 0.005,
+    "rotation_deg": 2.0,
+    "right_gripper_abs_error": 0.03,
+    "right_gripper_must_hold_workpiece": true,
+    "required_motion_mode": 1,
+    "required_arm_and_end_error": 0,
+    "camera_pair_skew_ms_max": 100.0,
+    "state_camera_skew_ms_max": 50.0
+  }
+}

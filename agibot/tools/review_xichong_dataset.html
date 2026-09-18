@@ -1,0 +1,435 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Agibot GR00T 数据人工审核</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0a0d12;
+      --panel: #111722;
+      --panel2: #171f2d;
+      --line: #293447;
+      --text: #e8edf5;
+      --muted: #8f9bae;
+      --blue: #5ba6ff;
+      --green: #43d17c;
+      --red: #ff6470;
+      --amber: #f5b942;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; height: 100vh; overflow: hidden; background: var(--bg); color: var(--text); font: 14px/1.45 Inter, system-ui, sans-serif; }
+    button, input, textarea, select { font: inherit; }
+    button { color: var(--text); }
+    .app { display: grid; grid-template-columns: 310px minmax(0, 1fr); height: 100vh; }
+    aside { display: flex; min-height: 0; flex-direction: column; border-right: 1px solid var(--line); background: #0e131c; }
+    .brand { padding: 18px 18px 12px; border-bottom: 1px solid var(--line); }
+    .brand h1 { margin: 0 0 4px; font-size: 17px; letter-spacing: .2px; }
+    .brand p { margin: 0; color: var(--muted); font-size: 12px; }
+    .counts { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-top: 14px; }
+    .count { padding: 7px 4px; text-align: center; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); }
+    .count b { display: block; font-size: 16px; }
+    .count span { color: var(--muted); font-size: 10px; }
+    .sidebar-tools { padding: 10px 12px; display: grid; grid-template-columns: 1fr 84px; gap: 8px; border-bottom: 1px solid var(--line); }
+    input, textarea, select { border: 1px solid var(--line); border-radius: 7px; background: #0c111a; color: var(--text); outline: none; }
+    input:focus, textarea:focus, select:focus { border-color: var(--blue); }
+    input, select { height: 34px; padding: 0 9px; }
+    .episode-list { overflow: auto; padding: 8px; }
+    .episode-row { width: 100%; display: grid; grid-template-columns: 11px 1fr auto; gap: 9px; align-items: center; padding: 9px 10px; border: 1px solid transparent; border-radius: 8px; background: transparent; text-align: left; cursor: pointer; }
+    .episode-row:hover { background: var(--panel); }
+    .episode-row.active { border-color: var(--blue); background: #17263a; }
+    .episode-row small { color: var(--muted); }
+    .dot { width: 9px; height: 9px; border-radius: 50%; background: #526076; }
+    .dot.pass { background: var(--green); }
+    .dot.fail { background: var(--red); }
+    .dot.uncertain { background: var(--amber); }
+    main { min-width: 0; min-height: 0; overflow: auto; }
+    .topbar { position: sticky; top: 0; z-index: 4; display: flex; gap: 14px; align-items: center; justify-content: space-between; padding: 12px 18px; border-bottom: 1px solid var(--line); background: rgba(10,13,18,.95); backdrop-filter: blur(12px); }
+    .episode-title { font-size: 18px; font-weight: 700; }
+    .meta { margin-left: 9px; color: var(--muted); font-size: 12px; font-weight: 400; }
+    .top-actions { display: flex; gap: 8px; align-items: center; }
+    .ghost, .nav { border: 1px solid var(--line); border-radius: 7px; background: var(--panel); padding: 7px 10px; cursor: pointer; text-decoration: none; color: var(--text); }
+    .ghost:hover, .nav:hover { border-color: #4c5d77; }
+    .content { padding: 16px 18px 30px; max-width: 1800px; margin: 0 auto; }
+    .videos { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .video-card { overflow: hidden; border: 1px solid var(--line); border-radius: 10px; background: #05070a; }
+    .video-label { padding: 7px 10px; background: var(--panel); color: var(--muted); font-size: 12px; }
+    video { display: block; width: 100%; aspect-ratio: 4 / 3; background: #000; object-fit: contain; }
+    .playback { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 12px 0; }
+    .playback .time { margin-left: auto; color: var(--muted); font-variant-numeric: tabular-nums; }
+    .task { padding: 11px 13px; border-left: 3px solid var(--blue); background: var(--panel); border-radius: 5px; color: #ccd6e5; }
+    .review { margin-top: 14px; padding: 15px; border: 1px solid var(--line); border-radius: 10px; background: var(--panel); }
+    .review-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 13px; }
+    .review-head h2 { margin: 0; font-size: 15px; }
+    .reviewer { display: flex; align-items: center; gap: 7px; color: var(--muted); font-size: 12px; }
+    .reviewer input { width: 150px; }
+    .decisions { display: grid; grid-template-columns: repeat(3, minmax(120px, 1fr)); gap: 9px; }
+    .decision { padding: 11px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel2); cursor: pointer; font-weight: 700; }
+    .decision.pass:hover, .decision.pass.selected { border-color: var(--green); color: var(--green); background: #10261b; }
+    .decision.fail:hover, .decision.fail.selected { border-color: var(--red); color: var(--red); background: #2a1217; }
+    .decision.uncertain:hover, .decision.uncertain.selected { border-color: var(--amber); color: var(--amber); background: #2b2311; }
+    .issues-title { margin: 16px 0 8px; color: var(--muted); font-size: 12px; }
+    .issues { display: flex; flex-wrap: wrap; gap: 7px; }
+    .issue { display: flex; gap: 6px; align-items: center; padding: 6px 9px; border: 1px solid var(--line); border-radius: 999px; background: #0c111a; cursor: pointer; }
+    .issue:has(input:checked) { border-color: var(--amber); color: var(--amber); }
+    .issue input { width: auto; height: auto; padding: 0; }
+    textarea { width: 100%; min-height: 72px; margin-top: 10px; padding: 9px; resize: vertical; }
+    .review-actions { display: flex; justify-content: space-between; gap: 10px; align-items: center; margin-top: 10px; }
+    .review-actions label { color: var(--muted); font-size: 12px; }
+    .primary { border: 0; border-radius: 7px; background: var(--blue); color: #06101e; padding: 8px 13px; font-weight: 800; cursor: pointer; }
+    .danger-link { border: 0; background: transparent; color: var(--muted); cursor: pointer; }
+    .shortcuts { margin-top: 12px; color: var(--muted); font-size: 11px; }
+    .toast { position: fixed; right: 20px; bottom: 20px; z-index: 10; padding: 10px 14px; border: 1px solid var(--line); border-radius: 8px; background: #1b2534; box-shadow: 0 8px 32px #0008; opacity: 0; transform: translateY(8px); pointer-events: none; transition: .18s; }
+    .toast.show { opacity: 1; transform: translateY(0); }
+    .empty { color: var(--muted); text-align: center; padding: 30px 10px; }
+    @media (max-width: 1050px) {
+      .app { grid-template-columns: 245px minmax(0, 1fr); }
+      .videos { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside>
+      <div class="brand">
+        <h1>GR00T 人工审核</h1>
+        <p id="datasetName">正在加载数据集…</p>
+        <div class="counts">
+          <div class="count"><b id="pendingCount">–</b><span>待审核</span></div>
+          <div class="count"><b id="passCount">–</b><span>通过</span></div>
+          <div class="count"><b id="failCount">–</b><span>失败</span></div>
+          <div class="count"><b id="uncertainCount">–</b><span>不确定</span></div>
+        </div>
+      </div>
+      <div class="sidebar-tools">
+        <select id="filterSelect" aria-label="审核状态筛选">
+          <option value="all">全部</option>
+          <option value="pending">仅待审核</option>
+          <option value="pass">仅通过</option>
+          <option value="fail">仅失败</option>
+          <option value="uncertain">仅不确定</option>
+        </select>
+        <input id="jumpInput" type="number" min="0" max="299" placeholder="跳转 #">
+      </div>
+      <div id="episodeList" class="episode-list"></div>
+    </aside>
+
+    <main>
+      <div class="topbar">
+        <div><span id="episodeTitle" class="episode-title">Episode —</span><span id="episodeMeta" class="meta"></span></div>
+        <div class="top-actions">
+          <button id="previousButton" class="nav">← 上一条</button>
+          <button id="nextButton" class="nav">下一条 →</button>
+          <a class="ghost" href="/api/export.csv">导出 CSV</a>
+        </div>
+      </div>
+      <div class="content">
+        <div class="videos">
+          <div class="video-card">
+            <div class="video-label">头部相机 · head_color</div>
+            <video id="headVideo" controls preload="metadata"></video>
+          </div>
+          <div class="video-card">
+            <div class="video-label">右腕相机 · hand_right</div>
+            <video id="handVideo" controls preload="metadata"></video>
+          </div>
+        </div>
+        <div class="playback">
+          <button id="playButton" class="ghost">▶ 同步播放 / 暂停</button>
+          <button id="replayButton" class="ghost">↺ 从头播放</button>
+          <label>速度
+            <select id="speedSelect">
+              <option value="0.5">0.5×</option>
+              <option value="1" selected>1×</option>
+              <option value="1.5">1.5×</option>
+              <option value="2">2×</option>
+            </select>
+          </label>
+          <span id="timeDisplay" class="time">00:00.0 / 00:00.0</span>
+        </div>
+        <div id="taskText" class="task">任务描述加载中…</div>
+
+        <section class="review">
+          <div class="review-head">
+            <h2>人工审核结论 <span id="savedState" class="meta">未审核</span></h2>
+            <label class="reviewer">审核人 <input id="reviewerInput" maxlength="100" placeholder="请输入姓名"></label>
+          </div>
+          <div class="decisions">
+            <button class="decision pass" data-status="pass">✓ 通过 <small>快捷键 1</small></button>
+            <button class="decision fail" data-status="fail">✕ 失败 <small>快捷键 2</small></button>
+            <button class="decision uncertain" data-status="uncertain">? 不确定 <small>快捷键 3</small></button>
+          </div>
+          <div class="issues-title">问题类型（失败/不确定时可多选）</div>
+          <div id="issues" class="issues">
+            <label class="issue"><input type="checkbox" value="empty_grasp">抓空</label>
+            <label class="issue"><input type="checkbox" value="unstable_grasp">抓取不稳</label>
+            <label class="issue"><input type="checkbox" value="insufficient_lift">抬升不足</label>
+            <label class="issue"><input type="checkbox" value="object_dropped">工件掉落</label>
+            <label class="issue"><input type="checkbox" value="occlusion_or_image_quality">遮挡/画质</label>
+            <label class="issue"><input type="checkbox" value="timing_anomaly">时序异常</label>
+            <label class="issue"><input type="checkbox" value="trajectory_anomaly">轨迹异常</label>
+            <label class="issue"><input type="checkbox" value="other">其他</label>
+          </div>
+          <textarea id="noteInput" maxlength="2000" placeholder="可选备注：具体失败帧、现象或建议…"></textarea>
+          <div class="review-actions">
+            <div>
+              <button id="clearButton" class="danger-link">清除本条审核</button>
+              <label><input id="autoAdvance" type="checkbox" checked> 通过后自动下一条</label>
+            </div>
+            <button id="saveDetailsButton" class="primary">保存详情（S）</button>
+          </div>
+          <div class="shortcuts">快捷键：空格 播放/暂停 · R 重播 · ←/→ 切换 · 1 通过 · 2 失败 · 3 不确定 · S 保存详情</div>
+        </section>
+      </div>
+    </main>
+  </div>
+  <div id="toast" class="toast"></div>
+
+  <script>
+    const state = { episodes: [], filtered: [], current: 0, selectedStatus: null, saving: false };
+    const $ = (id) => document.getElementById(id);
+    const headVideo = $('headVideo');
+    const handVideo = $('handVideo');
+    const videos = [headVideo, handVideo];
+    const issueInputs = [...document.querySelectorAll('#issues input')];
+    const decisionButtons = [...document.querySelectorAll('.decision')];
+    let syncGuard = false;
+    let toastTimer;
+
+    function pad(index) { return String(index).padStart(6, '0'); }
+    function statusOf(episode) { return episode.review?.status || 'pending'; }
+    function formatTime(seconds) {
+      if (!Number.isFinite(seconds)) return '00:00.0';
+      const minutes = Math.floor(seconds / 60);
+      const remainder = (seconds % 60).toFixed(1).padStart(4, '0');
+      return `${String(minutes).padStart(2, '0')}:${remainder}`;
+    }
+    function toast(message) {
+      $('toast').textContent = message;
+      $('toast').classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => $('toast').classList.remove('show'), 1800);
+    }
+    async function request(url, options = {}) {
+      const response = await fetch(url, options);
+      if (!response.ok) {
+        let message = `${response.status} ${response.statusText}`;
+        try { message = (await response.json()).error || message; } catch (_) {}
+        throw new Error(message);
+      }
+      return response.json();
+    }
+    function refreshCounts() {
+      const counts = {pending: 0, pass: 0, fail: 0, uncertain: 0};
+      state.episodes.forEach(ep => counts[statusOf(ep)]++);
+      Object.entries(counts).forEach(([name, value]) => $(`${name}Count`).textContent = value);
+    }
+    function applyFilter() {
+      const filter = $('filterSelect').value;
+      state.filtered = state.episodes.filter(ep => filter === 'all' || statusOf(ep) === filter);
+      renderList();
+    }
+    function renderList() {
+      const list = $('episodeList');
+      list.replaceChildren();
+      if (!state.filtered.length) {
+        const empty = document.createElement('div');
+        empty.className = 'empty';
+        empty.textContent = '此筛选条件下没有 episode';
+        list.append(empty);
+        return;
+      }
+      const fragment = document.createDocumentFragment();
+      for (const episode of state.filtered) {
+        const row = document.createElement('button');
+        row.className = `episode-row${episode.episode_index === state.current ? ' active' : ''}`;
+        row.dataset.index = episode.episode_index;
+        const dot = document.createElement('span');
+        dot.className = `dot ${statusOf(episode)}`;
+        const label = document.createElement('span');
+        label.innerHTML = `<b>Episode ${pad(episode.episode_index)}</b><br><small>${episode.source_episode}</small>`;
+        const duration = document.createElement('small');
+        duration.textContent = `${episode.duration_s.toFixed(1)}s`;
+        row.append(dot, label, duration);
+        row.addEventListener('click', () => selectEpisode(episode.episode_index));
+        fragment.append(row);
+      }
+      list.append(fragment);
+      requestAnimationFrame(() => list.querySelector('.active')?.scrollIntoView({block: 'nearest'}));
+    }
+    function loadReview(episode) {
+      const review = episode.review;
+      state.selectedStatus = review?.status || null;
+      decisionButtons.forEach(button => button.classList.toggle('selected', button.dataset.status === state.selectedStatus));
+      const selectedIssues = new Set(review?.issues || []);
+      issueInputs.forEach(input => input.checked = selectedIssues.has(input.value));
+      $('noteInput').value = review?.note || '';
+      $('savedState').textContent = review ? `已保存：${review.status} · ${new Date(review.reviewed_at).toLocaleString()}` : '未审核';
+      if (review?.reviewer && !$('reviewerInput').value) $('reviewerInput').value = review.reviewer;
+    }
+    function selectEpisode(index) {
+      const episode = state.episodes[index];
+      if (!episode) return;
+      videos.forEach(video => { video.pause(); video.removeAttribute('src'); video.load(); });
+      state.current = index;
+      $('episodeTitle').textContent = `Episode ${pad(index)}`;
+      $('episodeMeta').textContent = `${episode.source_episode} · 原完整集 #${episode.full_dataset_episode_index} · ${episode.length} 帧 · ${episode.duration_s.toFixed(1)} 秒`;
+      $('taskText').textContent = episode.tasks.join(' / ');
+      headVideo.src = `/media/head_color/episode_${pad(index)}.mp4`;
+      handVideo.src = `/media/hand_right/episode_${pad(index)}.mp4`;
+      videos.forEach(video => { video.playbackRate = Number($('speedSelect').value); video.load(); });
+      loadReview(episode);
+      renderList();
+      updateTime();
+    }
+    function neighbor(direction) {
+      const list = state.filtered.length ? state.filtered : state.episodes;
+      const position = list.findIndex(ep => ep.episode_index === state.current);
+      let target;
+      if (position >= 0) {
+        target = list[Math.max(0, Math.min(list.length - 1, position + direction))];
+      } else if (direction > 0) {
+        target = list.find(ep => ep.episode_index > state.current) || list[0];
+      } else {
+        target = [...list].reverse().find(ep => ep.episode_index < state.current) || list.at(-1);
+      }
+      if (target) selectEpisode(target.episode_index);
+    }
+    async function synchronizedPlay(restart = false) {
+      if (restart) videos.forEach(video => video.currentTime = 0);
+      if (!headVideo.paused && !handVideo.paused) {
+        videos.forEach(video => video.pause());
+      } else {
+        handVideo.currentTime = headVideo.currentTime;
+        await Promise.allSettled(videos.map(video => video.play()));
+      }
+    }
+    function updateTime() {
+      $('timeDisplay').textContent = `${formatTime(headVideo.currentTime)} / ${formatTime(headVideo.duration)}`;
+    }
+    async function saveReview(status, shouldAdvance = false) {
+      if (state.saving) return;
+      const reviewer = $('reviewerInput').value.trim();
+      if (!reviewer) {
+        toast('请先填写审核人姓名');
+        $('reviewerInput').focus();
+        return;
+      }
+      localStorage.setItem('agibotReviewer', reviewer);
+      state.saving = true;
+      try {
+        const payload = {
+          status,
+          issues: issueInputs.filter(input => input.checked).map(input => input.value),
+          note: $('noteInput').value,
+          reviewer,
+        };
+        const result = await request(`/api/review/${state.current}`, {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify(payload),
+        });
+        state.episodes[state.current].review = result.review;
+        state.selectedStatus = status;
+        refreshCounts();
+        applyFilter();
+        loadReview(state.episodes[state.current]);
+        toast(`Episode ${pad(state.current)} 已保存为 ${status}`);
+        if (shouldAdvance && $('autoAdvance').checked && status === 'pass') neighbor(1);
+      } catch (error) {
+        toast(`保存失败：${error.message}`);
+      } finally {
+        state.saving = false;
+      }
+    }
+    async function clearReview() {
+      if (!state.episodes[state.current].review || !confirm('确认清除本条人工审核记录？')) return;
+      try {
+        await request(`/api/review/${state.current}`, {method: 'DELETE'});
+        state.episodes[state.current].review = null;
+        refreshCounts();
+        applyFilter();
+        loadReview(state.episodes[state.current]);
+        toast('审核记录已清除');
+      } catch (error) { toast(`清除失败：${error.message}`); }
+    }
+    function isEditing() {
+      return ['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement?.tagName);
+    }
+
+    decisionButtons.forEach(button => button.addEventListener('click', () => saveReview(button.dataset.status, true)));
+    $('saveDetailsButton').addEventListener('click', () => {
+      if (!state.selectedStatus) return toast('请先选择通过、失败或不确定');
+      saveReview(state.selectedStatus, false);
+    });
+    $('clearButton').addEventListener('click', clearReview);
+    $('previousButton').addEventListener('click', () => neighbor(-1));
+    $('nextButton').addEventListener('click', () => neighbor(1));
+    $('playButton').addEventListener('click', () => synchronizedPlay());
+    $('replayButton').addEventListener('click', () => synchronizedPlay(true));
+    $('speedSelect').addEventListener('change', event => videos.forEach(video => video.playbackRate = Number(event.target.value)));
+    $('filterSelect').addEventListener('change', applyFilter);
+    $('jumpInput').addEventListener('change', event => {
+      const index = Number(event.target.value);
+      if (Number.isInteger(index) && index >= 0 && index < state.episodes.length) selectEpisode(index);
+      event.target.value = '';
+    });
+    headVideo.addEventListener('timeupdate', updateTime);
+    headVideo.addEventListener('loadedmetadata', updateTime);
+    videos.forEach((source, sourceIndex) => {
+      const peer = videos[1 - sourceIndex];
+      source.addEventListener('play', async () => {
+        if (syncGuard || !peer.paused) return;
+        syncGuard = true;
+        peer.currentTime = source.currentTime;
+        await peer.play().catch(() => {});
+        syncGuard = false;
+      });
+      source.addEventListener('pause', () => {
+        if (!syncGuard && !peer.paused) { syncGuard = true; peer.pause(); syncGuard = false; }
+      });
+      source.addEventListener('seeked', () => {
+        if (!syncGuard && Math.abs(peer.currentTime - source.currentTime) > .04) {
+          syncGuard = true; peer.currentTime = source.currentTime; syncGuard = false;
+        }
+      });
+    });
+    setInterval(() => {
+      if (!headVideo.paused && !handVideo.paused && Math.abs(headVideo.currentTime - handVideo.currentTime) > .08) {
+        handVideo.currentTime = headVideo.currentTime;
+      }
+    }, 250);
+    document.addEventListener('keydown', event => {
+      if (isEditing()) return;
+      if (event.code === 'Space') { event.preventDefault(); synchronizedPlay(); }
+      else if (event.key === 'ArrowLeft') neighbor(-1);
+      else if (event.key === 'ArrowRight') neighbor(1);
+      else if (event.key === '1') saveReview('pass', true);
+      else if (event.key === '2') saveReview('fail', false);
+      else if (event.key === '3') saveReview('uncertain', false);
+      else if (event.key.toLowerCase() === 'r') synchronizedPlay(true);
+      else if (event.key.toLowerCase() === 's') {
+        if (state.selectedStatus) saveReview(state.selectedStatus, false);
+        else toast('请先选择审核结论');
+      }
+    });
+
+    async function initialize() {
+      try {
+        const payload = await request('/api/episodes');
+        state.episodes = payload.episodes;
+        $('datasetName').textContent = `${payload.dataset_name} · ${payload.total_episodes} episodes · ${payload.fps} Hz`;
+        $('reviewerInput').value = localStorage.getItem('agibotReviewer') || '';
+        refreshCounts();
+        applyFilter();
+        selectEpisode(0);
+      } catch (error) {
+        $('datasetName').textContent = `加载失败：${error.message}`;
+        toast(`加载失败：${error.message}`);
+      }
+    }
+    initialize();
+  </script>
+</body>
+</html>

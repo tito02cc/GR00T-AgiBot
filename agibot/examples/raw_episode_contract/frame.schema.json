@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/agibot/g2-right-grasp-frame.schema.json",
+  "title": "Agibot G2 right-arm raw frame consumed by the GR00T converter",
+  "type": "object",
+  "required": [
+    "frame_index",
+    "timestamp_monotonic",
+    "pose_frame",
+    "action_mode",
+    "prompt",
+    "right_ee_pose",
+    "right_gripper",
+    "action_right_7d",
+    "next_right_ee_pose",
+    "next_right_gripper",
+    "images",
+    "image_meta"
+  ],
+  "properties": {
+    "frame_index": {"type": "integer", "minimum": 0},
+    "timestamp_monotonic": {"type": "number"},
+    "pose_frame": {"const": "base_link_tf"},
+    "action_mode": {"const": "next_delta"},
+    "prompt": {"type": "string", "minLength": 1},
+    "right_ee_pose": {"$ref": "#/$defs/pose7"},
+    "right_gripper": {
+      "type": "object",
+      "required": ["position", "position_raw"],
+      "properties": {
+        "position": {"type": "number"},
+        "position_raw": {"type": "number"}
+      }
+    },
+    "action_right_7d": {"$ref": "#/$defs/vector7"},
+    "next_right_ee_pose": {"$ref": "#/$defs/pose7"},
+    "next_right_gripper": {"type": "number"},
+    "images": {
+      "type": "object",
+      "required": ["head_color", "hand_right"],
+      "properties": {
+        "head_color": {"type": "string", "pattern": "^images/head_color_[0-9]{6}\\.jpg$"},
+        "hand_right": {"type": "string", "pattern": "^images/hand_right_[0-9]{6}\\.jpg$"}
+      }
+    },
+    "image_meta": {
+      "type": "object",
+      "required": ["head_color", "hand_right"],
+      "properties": {
+        "head_color": {"$ref": "#/$defs/imageMeta"},
+        "hand_right": {"$ref": "#/$defs/imageMeta"}
+      }
+    }
+  },
+  "$defs": {
+    "vector7": {
+      "type": "array",
+      "items": {"type": "number"},
+      "minItems": 7,
+      "maxItems": 7
+    },
+    "pose7": {
+      "type": "array",
+      "description": "XYZ plus normalized quaternion XYZW",
+      "items": {"type": "number"},
+      "minItems": 7,
+      "maxItems": 7
+    },
+    "imageMeta": {
+      "type": "object",
+      "required": ["software_midpoint_monotonic"],
+      "properties": {
+        "software_midpoint_monotonic": {"type": "number"}
+      }
+    }
+  },
+  "additionalProperties": true
+}

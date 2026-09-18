@@ -1,0 +1,15 @@
+{
+  "snapshot_date": "2026-09-14",
+  "sources": [
+    "agibot/scripts/run_g2_groot_full_place_inference.py",
+    "agibot/tools/g2_groot_live_observation_client.py",
+    "agibot/tools/g2_gr00t_shadow_adapter.py",
+    "agibot/scripts/run_g2_groot_full_protected_inference.py",
+    "agibot/scripts/run_g2_groot_live_model_h2.py",
+    "agibot/robot/g2_groot_h1_bridge_client.py",
+    "agibot/robot/g2_groot_gripper_state_machine.py",
+    "agibot/robot/g2_groot_contact_guard.py",
+    "agibot/configs/xichong_right_place_r0002_config.py"
+  ],
+  "note": "Frozen local post-success runner and dependencies. Both tasks use explicit parameters. Official gr00t package, Python environment and model weights remain external; no claim of a bit-identical historical workstation."
+}

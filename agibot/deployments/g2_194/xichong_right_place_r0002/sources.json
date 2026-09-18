@@ -1,0 +1,22 @@
+{
+  "snapshot_date": "2026-09-14",
+  "bridge_version": "continuous_20260909",
+  "sources": {
+    "g2_groot_right_observation_bridge": "/home/agi/vla_ct/bridges/10.20.15.194/g2_groot_right_observation_bridge.py",
+    "g2_groot_continuous_action_bridge": "/home/agi/vla_ct/bridges/10.20.15.194/candidates/continuous_20260909/g2_groot_continuous_action_bridge.py",
+    "g2_groot_continuous_controller": "/home/agi/vla_ct/bridges/10.20.15.194/candidates/continuous_20260909/g2_groot_continuous_controller.py",
+    "g2_groot_persistent_right_arm_controller": "/home/agi/vla_ct/bridges/10.20.15.194/g2_groot_persistent_right_arm_controller.py",
+    "g2_groot_trajectory_tracking_probe": "/home/agi/vla_ct/bridges/10.20.15.194/g2_groot_trajectory_tracking_probe.py",
+    "g2_groot_recover_pre_wbc_pose": "/home/agi/vla_ct/bridges/10.20.15.194/g2_groot_recover_pre_wbc_pose.py",
+    "g2_groot_continuous_sender": "/home/agi/vla_ct/bridges/10.20.15.194/candidates/continuous_20260909/g2_groot_continuous_sender.py",
+    "g2_groot_persistent_h1_action_bridge": "/home/agi/vla_ct/bridges/10.20.15.194/g2_groot_persistent_h1_action_bridge.py",
+    "g2_groot_gripper_state_machine": "/home/agi/vla_ct/bridges/10.20.15.194/g2_groot_gripper_state_machine.py",
+    "g2_groot_gripper_runtime": "/home/agi/vla_ct/bridges/10.20.15.194/g2_groot_gripper_runtime.py"
+  },
+  "notes": [
+    "Bridge files copied unchanged from named deployed directory; transitive shared G2 modules captured from robot on snapshot date.",
+    "Shared dependencies are a current snapshot, not an assertion of a bit-identical historical environment.",
+    "No GDK binaries, model weights, credentials, datasets or hardware logs included.",
+    "No hash scans and no robot movement performed while packaging."
+  ]
+}

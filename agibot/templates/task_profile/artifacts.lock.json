@@ -1,0 +1,34 @@
+{
+  "schema": "agibot_groot_artifacts_v1",
+  "updated_at": "CHANGE_ME_YYYY-MM-DD",
+  "repository": {
+    "name": "Isaac-GR00T",
+    "baseline_commit": "CHANGE_ME_COMMIT"
+  },
+  "base_model": {
+    "repo_id": "nvidia/GR00T-N1.7-3B",
+    "revision": "CHANGE_ME_PINNED_REVISION",
+    "distribution": "huggingface_gated"
+  },
+  "backbone_model": {
+    "repo_id": "nvidia/Cosmos-Reason2-2B",
+    "revision": "CHANGE_ME_PINNED_REVISION",
+    "distribution": "huggingface_gated"
+  },
+  "training_dataset": {
+    "id": "CHANGE_ME_TASK_ID",
+    "uri": "team-object-storage://CHANGE_ME",
+    "episodes": 24,
+    "frames": 2400,
+    "parquet_files": 24,
+    "video_files": 48,
+    "sha256_manifest": "agibot/profiles/CHANGE_ME_TASK_ID/dataset.sha256"
+  },
+  "finetuned_checkpoint": {
+    "id": "CHANGE_ME_CHECKPOINT_ID",
+    "uri": "team-object-storage://CHANGE_ME",
+    "training_steps": 10000,
+    "safetensor_shards": 1,
+    "sha256_manifest": "agibot/profiles/CHANGE_ME_TASK_ID/model.sha256"
+  }
+}

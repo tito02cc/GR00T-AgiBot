@@ -1,0 +1,34 @@
+{
+  "schema": "agibot_groot_artifacts_v1",
+  "updated_at": "2026-09-01",
+  "repository": {
+    "name": "Isaac-GR00T",
+    "baseline_commit": "0000000-example"
+  },
+  "base_model": {
+    "repo_id": "nvidia/GR00T-N1.7-3B",
+    "revision": "example-pinned-revision",
+    "distribution": "huggingface_gated"
+  },
+  "backbone_model": {
+    "repo_id": "nvidia/Cosmos-Reason2-2B",
+    "revision": "example-pinned-revision",
+    "distribution": "huggingface_gated"
+  },
+  "training_dataset": {
+    "id": "example_right_arm_task",
+    "uri": "team-object-storage://example-bucket/right-arm-task",
+    "episodes": 24,
+    "frames": 2400,
+    "parquet_files": 24,
+    "video_files": 48,
+    "sha256_manifest": "agibot/profiles/example_right_arm_task/dataset.sha256"
+  },
+  "finetuned_checkpoint": {
+    "id": "example_right_arm_task_checkpoint",
+    "uri": "team-object-storage://example-bucket/right-arm-task-model",
+    "training_steps": 10000,
+    "safetensor_shards": 1,
+    "sha256_manifest": "agibot/profiles/example_right_arm_task/model.sha256"
+  }
+}

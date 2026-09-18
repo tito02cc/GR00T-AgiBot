@@ -1,0 +1,15 @@
+{
+  "pipeline": "g2_right_place",
+  "raw_root": "agibot/data/zhewan_right_place_r0003_job01",
+  "train_manifest": "agibot/tasks/zhewan_right_place_r0003/train.txt",
+  "heldout_manifest": "agibot/tasks/zhewan_right_place_r0003/heldout.txt",
+  "profile": "agibot/configs/zhewan_right_place_r0003_prescreen.json",
+  "modality_config": "agibot/configs/zhewan_right_place_config.py",
+  "output_root": "agibot/gr00t_data/zhewan_right_place_r0003_400",
+  "report_dir": "agibot/local_reports/zhewan_prepare_20260910",
+  "workers": 4,
+  "crf": 18,
+  "normalization_bounds": "minmax",
+  "expected_train_count": 400,
+  "expected_heldout_count": 58
+}

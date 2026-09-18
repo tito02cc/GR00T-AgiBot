@@ -1,0 +1,11 @@
+{
+  "schema": "g2_right_contact_guard_v1",
+  "robot_ip": "10.20.15.194",
+  "base_frame": "base_link",
+  "eef_frame": "arm_r_end_link",
+  "confirmed": false,
+  "eef_min_z_m": null,
+  "max_force_norm_n": null,
+  "max_torque_norm_nm": null,
+  "calibration_note": ""
+}

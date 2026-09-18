@@ -1,0 +1,59 @@
+{
+  "robot_ip": "10.20.15.194",
+  "arm": "right",
+  "frozen_on": "2026-09-14",
+  "model_port": 5564,
+  "observation_port": 19100,
+  "action_port": 19200,
+  "robot_observation_port": 9100,
+  "robot_action_port": 9200,
+  "model_hz": 10,
+  "action_horizon": 16,
+  "gdk_hz": 50,
+  "rtc_enabled": false,
+  "trajectory_filter_enabled": false,
+  "gripper_open": -0.785,
+  "gripper_closed": 0,
+  "minimum_retraction_m": 0.13,
+  "task": "zhewan_right_place_r0003",
+  "bridge_version": "h16_collision_latched_20260911",
+  "model": "agibot/models/zhewan_rplace_r0003_n1d7_checkpoint-30000/model",
+  "modality_config": null,
+  "use_percentiles": false,
+  "prompt": "The right arm moves the gripped metal workpiece to the bending workstation placement target, opens the right gripper to release the workpiece, then retracts the right arm.",
+  "initial_pose": [
+    0.47464483976364136,
+    -0.24527516961097717,
+    0.9220312237739563,
+    0.5863632738612143,
+    -0.00873417218526592,
+    0.8096822094684767,
+    0.022727625772225424
+  ],
+  "initial_gripper": -0.0023059374652802944,
+  "workspace_min": [
+    0.3858503,
+    -0.3010741,
+    0.803159
+  ],
+  "workspace_max": [
+    0.7694756,
+    -0.1595245,
+    1.07841
+  ],
+  "optimize_transport": true,
+  "native_chunk_submission": true,
+  "require_native_collision_latch": true,
+  "required_control_mode": 3,
+  "freeze_compensation_after_calibration": true,
+  "native_collision_config_at_success": {
+    "is_enabled": true,
+    "sensitivity": 3,
+    "checkout_timeout_ms": 500
+  },
+  "validation_reports": [
+    "agibot/local_reports/zhewan_live_20260911/collision_latched_retry/inference.json"
+  ],
+  "operator_feedback": "2026-09-11: 这次可以；轨迹挺平滑",
+  "protection_note": "Checks enabled native protection and recovery >=500 ms; does not set protection config or calibrate force sensors."
+}

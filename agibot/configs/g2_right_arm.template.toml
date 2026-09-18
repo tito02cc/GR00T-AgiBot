@@ -1,0 +1,72 @@
+# Copy to agibot/configs/local/<robot-id>.toml and replace every CHANGE_ME.
+# Files under configs/local are intentionally ignored by Git.
+
+[identity]
+robot_id = "CHANGE_ME"
+robot_family = "Agibot G2"
+arm = "right"
+gdk_version = "CHANGE_ME"
+calibration_confirmed = false
+calibrated_at = "CHANGE_ME"
+
+[frames]
+source_pose_frame = "base_link"
+training_pose_frame_label = "base_link_tf"
+right_eef_frame = "arm_r_end_link"
+quaternion_order = "xyzw"
+rot6d_order = "r00_r01_r02_r10_r11_r12"
+
+[timing]
+policy_hz = 10.0
+controller_hz = 50.0
+controller_ticks_per_action = 5
+camera_timeout_ms = 500.0
+max_camera_skew_ms = 100.0
+max_state_camera_skew_ms = 50.0
+
+[cameras]
+head_key = "head_color"
+right_wrist_key = "hand_right"
+width = 640
+height = 480
+jpeg_quality = 92
+
+[gripper]
+joint_name = "right_gripper_joint1"
+end_model = "omnipicker"
+training_open = -0.785
+training_closed = 0.0
+feedback_encoding = "raw_0_120"
+raw_open_nominal = -1.0
+raw_closed_nominal = -1.0
+accepted_settled_statuses = []
+feedback_direction = "increases_when_closing"
+
+[initial_pose]
+xyz_quaternion_xyzw = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0]
+read_only_translation_tolerance_m = 0.02
+read_only_rotation_tolerance_deg = 5.0
+execution_translation_tolerance_m = 0.0002
+execution_rotation_tolerance_deg = 0.02
+gripper_tolerance = 0.10
+
+[workspace]
+hardware_minimum_xyz_m = [0.0, 0.0, 0.0]
+hardware_maximum_xyz_m = [0.0, 0.0, 0.0]
+policy_minimum_xyz_m = [0.0, 0.0, 0.0]
+policy_maximum_xyz_m = [0.0, 0.0, 0.0]
+
+[network]
+robot_host = "CHANGE_ME"
+observation_robot_port = 9100
+action_robot_port = 9200
+observation_local_port = 19100
+action_local_port = 19200
+model_local_port = 5564
+
+[gdk]
+required_mode = 5
+right_arm_error_ok = 0
+right_end_error_ok = 0
+single_persistent_owner_required = true
+motion_plan_for_policy_waypoints = false

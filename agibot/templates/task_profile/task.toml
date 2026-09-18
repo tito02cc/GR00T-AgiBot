@@ -1,0 +1,62 @@
+schema_version = 1
+
+[task]
+id = "CHANGE_ME_TASK_ID"
+# Select "left" or "right" for this task. The included verified case uses right.
+arm = "right"
+embodiment = "NEW_EMBODIMENT"
+prompt = "CHANGE_ME_COMPLETE_TASK_INSTRUCTION"
+frequency_hz = 10.0
+action_horizon = 16
+minimum_task_progress_m = 0.01
+
+[images]
+keys = ["head_color", "hand_right"]
+width = 640
+height = 480
+color = "RGB"
+dtype = "uint8"
+
+[state.right_eef]
+dimension = 9
+representation = "XYZ_ROT6D"
+rotation_6d_order = "r00_r01_r02_r10_r11_r12"
+pose_frame_label = "base_link_tf"
+
+[state.right_gripper]
+dimension = 1
+open = -0.785
+closed = 0.0
+
+[action.right_eef]
+dimension = 9
+type = "RELATIVE"
+representation = "XYZ_ROT6D"
+delta_indices = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+
+[action.right_gripper]
+dimension = 1
+type = "ABSOLUTE"
+
+[dataset]
+# Demonstration only. Replace after auditing; no universal episode count exists.
+target_episode_count = 24
+videos_per_episode = 2
+
+[pipeline]
+arm = "right"
+modality_config = "agibot/profiles/CHANGE_ME_TASK_ID/modality_config.py"
+converter = "agibot/tasks/CHANGE_ME_TASK_ID/convert.py"
+selector = "agibot/tasks/CHANGE_ME_TASK_ID/select.py"
+training_validator = "agibot/tasks/CHANGE_ME_TASK_ID/validate_training_data.py"
+shadow_validator = "agibot/scripts/validate_g2_gr00t_shadow_adapter.py"
+training_preflight = "agibot/training/preflight_1xa10080.sh"
+training_launcher = "agibot/training/launch_1xa10080.sh"
+inference_runner = "agibot/tasks/CHANGE_ME_TASK_ID/run_inference.py"
+recovery_runner = "agibot/tasks/CHANGE_ME_TASK_ID/recover.py"
+
+[training]
+run_id = "CHANGE_ME_TASK_ID_n1d7_1xa10080_v1"
+max_steps = 10000
+save_steps = 2000
+save_total_limit = 2

@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+AGIBOT_BIN_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+GROOT_REPO_ROOT="$(cd "${AGIBOT_BIN_DIR}/../.." && pwd)"
+GROOT_PYTHON="${GROOT_PYTHON:-${GROOT_REPO_ROOT}/.venv/bin/python}"
+
+if [[ ! -x "${GROOT_PYTHON}" ]]; then
+  echo "Missing Python environment: ${GROOT_PYTHON}" >&2
+  echo "Run: uv python install 3.12 && uv sync" >&2
+  exit 2
+fi
+
+exec "${GROOT_PYTHON}" "${GROOT_REPO_ROOT}/agibot/scripts/team_cli.py" "$@"

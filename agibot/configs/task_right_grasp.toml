@@ -1,0 +1,60 @@
+schema_version = 1
+
+[task]
+id = "xichong_right_single_grasp"
+arm = "right"
+embodiment = "NEW_EMBODIMENT"
+prompt = "starting with the right gripper open and the left arm and left gripper stationary, grasp the metal_workpiece with the right gripper, lift it at least 3 cm clear of the pickup position, and hold the right arm stable"
+frequency_hz = 10.0
+action_horizon = 16
+minimum_lift_m = 0.03
+
+[images]
+keys = ["head_color", "hand_right"]
+width = 640
+height = 480
+color = "RGB"
+dtype = "uint8"
+
+[state.right_eef]
+dimension = 9
+representation = "XYZ_ROT6D"
+rotation_6d_order = "r00_r01_r02_r10_r11_r12"
+pose_frame_label = "base_link_tf"
+
+[state.right_gripper]
+dimension = 1
+open = -0.785
+closed = 0.0
+
+[action.right_eef]
+dimension = 9
+type = "RELATIVE"
+representation = "XYZ_ROT6D"
+delta_indices = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+
+[action.right_gripper]
+dimension = 1
+type = "ABSOLUTE"
+
+[dataset]
+target_episode_count = 300
+videos_per_episode = 2
+
+[pipeline]
+arm = "right"
+modality_config = "agibot/configs/xichong_right_single_grasp_config.py"
+converter = "agibot/scripts/convert_xichong_right_single_grasp.py"
+selector = "agibot/scripts/select_xichong_training_subset.py"
+training_validator = "agibot/scripts/validate_xichong_gr00t_training_ready.py"
+shadow_validator = "agibot/scripts/validate_g2_gr00t_shadow_adapter.py"
+training_preflight = "agibot/training/preflight_xichong_1xa10080.sh"
+training_launcher = "agibot/training/launch_xichong_1xa10080.sh"
+inference_runner = "agibot/scripts/run_g2_groot_full_protected_inference.py"
+recovery_runner = "agibot/scripts/recover_g2_groot_training_start.py"
+
+[training]
+run_id = "xichong_rgrasp_n1d7_e300_f10_h16_1xa10080_s30k_ckpt5k_v1"
+max_steps = 30000
+save_steps = 5000
+save_total_limit = 2

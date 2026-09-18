@@ -1,0 +1,13 @@
+{
+  "pipeline": "g2_right_place",
+  "raw_root": "agibot/data/REPLACE_TASK",
+  "train_manifest": "agibot/tasks/REPLACE_TASK/train.txt",
+  "heldout_manifest": "agibot/tasks/REPLACE_TASK/heldout.txt",
+  "profile": "agibot/tasks/REPLACE_TASK/prescreen.json",
+  "modality_config": "agibot/tasks/REPLACE_TASK/modality.py",
+  "output_root": "agibot/gr00t_data/REPLACE_TASK",
+  "report_dir": "agibot/local_reports/REPLACE_TASK",
+  "workers": 4,
+  "normalization_bounds": "minmax",
+  "crf": 18
+}

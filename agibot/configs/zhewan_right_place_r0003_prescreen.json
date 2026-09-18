@@ -1,0 +1,35 @@
+{
+  "task_id": "zhewan_right_place",
+  "expected_batch": "zhewan_right_place_r0003_job01",
+  "accepted_source_tasks": [
+    "operator_xichong_right_place_right_place_release_withdraw_r0003"
+  ],
+  "accepted_source_prompts": [
+    "The right arm moves the gripped workpiece to the Xichong placement target, opens the right gripper to release the workpiece, then retracts the right arm to a safe pose."
+  ],
+  "canonical_prompt": "The right arm moves the gripped metal workpiece to the bending workstation placement target, opens the right gripper to release the workpiece, then retracts the right arm.",
+  "source_alias_reason": "Operator confirmed this legacy-named batch as zhewan_right_place after viewing episode_000409 on 2026-09-09. Preserve all source fields; apply the recorded task mapping only during conversion.",
+  "cameras": ["head_color", "hand_right"],
+  "threshold_policy": "Initial review thresholds based on the previous successful right-place workflow. Exceeding a numerical threshold produces a review candidate, not deletion or proof of corruption. Metadata candidates still require image decoding and visual review.",
+  "thresholds": {
+    "max_dt_s": 0.2,
+    "min_dt_s": 0.05,
+    "max_camera_span_ms": 100.0,
+    "max_head_state_offset_ms": 100.0,
+    "max_hand_state_offset_ms": 50.0,
+    "max_step_translation_m": 0.08,
+    "max_step_rotation_rad": 0.15,
+    "max_gripper_backtrack": 0.05,
+    "min_withdraw_m": 0.1,
+    "max_terminal_stability_m": 0.005,
+    "min_pre_release_frames": 15,
+    "min_post_release_frames": 10,
+    "initial_gripper_held_min": -0.55,
+    "terminal_gripper_open_max": -0.7,
+    "release_hold_frames": 3,
+    "terminal_hold_frames": 5,
+    "gripper_min": -0.8,
+    "gripper_max": 0.02,
+    "consistency_atol": 0.00002
+  }
+}

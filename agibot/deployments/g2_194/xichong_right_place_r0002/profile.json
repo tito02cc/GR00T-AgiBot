@@ -1,0 +1,54 @@
+{
+  "robot_ip": "10.20.15.194",
+  "arm": "right",
+  "frozen_on": "2026-09-14",
+  "model_port": 5564,
+  "observation_port": 19100,
+  "action_port": 19200,
+  "robot_observation_port": 9100,
+  "robot_action_port": 9200,
+  "model_hz": 10,
+  "action_horizon": 16,
+  "gdk_hz": 50,
+  "rtc_enabled": false,
+  "trajectory_filter_enabled": false,
+  "gripper_open": -0.785,
+  "gripper_closed": 0,
+  "minimum_retraction_m": 0.13,
+  "task": "xichong_right_place_r0002",
+  "bridge_version": "continuous_20260909",
+  "model": "agibot/models/xichong_rplace_r0002_n1d7_checkpoint-30000/model",
+  "modality_config": "agibot/configs/xichong_right_place_r0002_config.py",
+  "use_percentiles": true,
+  "prompt": "The right arm moves the gripped workpiece to the Xichong placement target, opens the right gripper to release the workpiece, then retracts the right arm to a safe pose.",
+  "initial_pose": [
+    0.5013904571533203,
+    -0.1765020340681076,
+    1.0539140701293945,
+    0.5225321066771904,
+    -0.001878945069661977,
+    0.8526121988491865,
+    0.0030175205845201216
+  ],
+  "initial_gripper": -0.005764516536146402,
+  "workspace_min": [
+    0.4172,
+    -0.2392,
+    0.975
+  ],
+  "workspace_max": [
+    0.8403,
+    -0.1031,
+    1.2674
+  ],
+  "optimize_transport": false,
+  "native_chunk_submission": false,
+  "require_native_collision_latch": false,
+  "freeze_compensation_after_calibration": false,
+  "validation_reports": [
+    "agibot/local_reports/continuous_control_20260909/full_7tou1x/inference.json",
+    "agibot/local_reports/continuous_control_20260909/repeat_2/inference.json"
+  ],
+  "operator_feedback": "2026-09-09: 很完整 / 很流畅",
+  "protection_note": "Historical successful bridge has no application native collision latch; false is not an instruction to disable robot protection. Do not transplant zhewan changes without a separate test."
+}
