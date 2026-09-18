@@ -80,8 +80,12 @@ G2 原始数采数据清洗、GR00T 格式转换、模型训练与真机推理�
 | xichong 放置 30k 推理包 | [xichong 模型](https://huggingface.co/Minth-Group/GR00T-G2-xichong-right-place-r0002-30k) | 约 16.27 GiB |
 | zhewan 放置 30k 推理包 | [zhewan 模型](https://huggingface.co/Minth-Group/GR00T-G2-zhewan-right-place-r0003-30k) | 约 16.27 GiB |
 
-文件分批上传，下载前查看各仓库 **Files and versions**；尚未出现的文件需等待上传完成。
+上述数据和模型已完整上传，远端文件清单及字节数已与发布文件核对。
 仅运行一个放置任务时，只需下载对应模型，不必下载数据或另一个任务的模型。
+
+资源按用途分开保存：GitHub 提供代码、配置、文档和演示视频；Hugging Face 数据仓库
+提供转换数据归档；两个模型仓库各自保存对应任务的权重、骨干和配置。
+模型仓库的 `model/`、`backbone/` 不要合并或改名，现有下载脚本和推理入口依赖这组结构。
 
 **转换数据：**
 

@@ -34,8 +34,7 @@ Hugging Face 公开提供，下载无需登录或申请读取权限。
 | zhewan 右臂放置 30k 模型（约 16.27 GiB） | [zhewan 模型](https://huggingface.co/Minth-Group/GR00T-G2-zhewan-right-place-r0003-30k) |
 
 下载、解压及骨干路径配置见 [操作手册第 2.5 节](agibot/README.md#25-从-hugging-face-下载)。
-文件分批上传，请在各仓库的 Files and versions 确认所需文件已出现；
-仓库首页可访问不代表权重已全部上传。
+上述数据和模型已完整上传，可直接公开下载。只做现有任务推理时，下载对应任务模型即可。
 原始数采数据、早期抓取模型及精确续训所需的优化器状态不在上述发布范围。
 公开可读不改变数据及模型的许可要求，具体见各资源页。
 
