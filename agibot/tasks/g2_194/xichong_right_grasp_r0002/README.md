@@ -123,6 +123,9 @@ loss 从前 10 步平均 1.2374 到最后 10 步平均 0.9409，抽测显存约 
 
 2026-09-20 正式30k训练完成，19:21正常退出；21:04本机推理包下载及processor重载检查通过。
 模型入口：`agibot/models/xichong_rgrasp_r0002_n1d7_checkpoint-30000/model/`。
+对外分发的 [30k 推理包](https://huggingface.co/Minth-Group/GR00T-G2-xichong-right-grasp-r0002-30k)
+和 [400/91 条转换数据](https://huggingface.co/datasets/Minth-Group/GR00T-G2-xichong-right-grasp-r0002-data)
+分别下载；原始 491 条 episode 未公开，重做清洗仍需内部取得。
 本机实际GPU前向、8条训练样本和全部91条留出轨迹的H16开放环评估已完成，
 无解码失败或原始夹爪数值越界，仍有闭合时机与长窗口预测误差警告。
 详细指标、异常复测及复现命令见 [OFFLINE_TEST.md](OFFLINE_TEST.md)。未连接机器人或改变生产桥接。

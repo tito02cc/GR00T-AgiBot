@@ -87,13 +87,15 @@ G2 原始数采数据清洗、GR00T 格式转换、模型训练与真机推理�
 | 转换数据归档 | [GR00T-AgiBot-data](https://huggingface.co/datasets/Minth-Group/GR00T-AgiBot-data) | 约 7.17 GiB |
 | xichong 放置 30k 推理包 | [xichong 模型](https://huggingface.co/Minth-Group/GR00T-G2-xichong-right-place-r0002-30k) | 约 16.27 GiB |
 | zhewan 放置 30k 推理包 | [zhewan 模型](https://huggingface.co/Minth-Group/GR00T-G2-zhewan-right-place-r0003-30k) | 约 16.27 GiB |
+| 新 xichong 抓取 r0002 转换数据，400/91 | [独立数据仓库](https://huggingface.co/datasets/Minth-Group/GR00T-G2-xichong-right-grasp-r0002-data) | 约 2.26 GiB |
+| 新 xichong 抓取 r0002 30k 推理包 | [新抓取模型](https://huggingface.co/Minth-Group/GR00T-G2-xichong-right-grasp-r0002-30k) | 约 16.27 GiB |
+| 早期 xichong 抓取 30k 推理包 | [早期抓取模型](https://huggingface.co/Minth-Group/GR00T-G2-xichong-right-single-grasp-30k) | 约 16.27 GiB |
 
-上述数据和模型已完整上传，远端文件清单及字节数已与发布文件核对。
-仅运行一个放置任务时，只需下载对应模型，不必下载数据或另一个任务的模型。
+只运行一个任务时，只需下载对应模型，不必下载数据或另一个任务的模型。
 
 资源按用途分开保存：GitHub 提供代码、配置、文档和演示视频；Hugging Face 数据仓库
-提供前三项历史任务的转换数据归档；两个模型仓库各自保存对应放置任务的权重、骨干和配置。
-**新抓取 r0002 的转换数据和模型不在这些公开仓库里**，见第 2.6 节。
+提供前三项历史任务的转换数据归档；新抓取 r0002 使用独立数据仓库；四个模型仓库各自保存对应任务的权重、骨干和配置。
+**原始数采 episode 不在这些公开仓库里**，见第 2.6 节。
 模型仓库的 `model/`、`backbone/` 不要合并或改名，现有下载脚本和推理入口依赖这组结构。
 
 **转换数据：**
@@ -115,6 +117,22 @@ tar -xzf downloads/groot-data/Isaac-GR00T-converted-data.tar.gz --strip-componen
 解压数据的磁盘空间。归档包含历史转换版本，训练目录按第 2.3 节选择，不混合历史版本或 heldout。
 这不是原始数采数据，也不是直接供 `datasets.load_dataset()` 加载的仓库。
 
+新 xichong 抓取 r0002 的转换数据单独下载，目录结构直接是 `train/`、`heldout/`，无需解压历史归档：
+
+```bash
+.venv/bin/python - <<'PY'
+from huggingface_hub import snapshot_download
+snapshot_download(
+    "Minth-Group/GR00T-G2-xichong-right-grasp-r0002-data",
+    repo_type="dataset",
+    local_dir="agibot/gr00t_data/g2_194/xichong_right_grasp_r0002_400",
+    token=False,
+)
+PY
+```
+
+训练仅指向该目录的 `train/`，不要把 `heldout/` 或整个父目录作为训练输入。
+
 **推理模型：选择一个任务下载，并配置本地骨干路径。**
 
 ```bash
@@ -124,15 +142,23 @@ import sys
 from pathlib import Path
 from huggingface_hub import snapshot_download
 
-task = "zhewan"  # xichong 或 zhewan，只下载所选任务
+task = "zhewan_place"  # 从下列四项中选一个
 packages = {
-    "xichong": (
+    "xichong_place": (
         "Minth-Group/GR00T-G2-xichong-right-place-r0002-30k",
         "xichong_rplace_r0002_n1d7_checkpoint-30000",
     ),
-    "zhewan": (
+    "zhewan_place": (
         "Minth-Group/GR00T-G2-zhewan-right-place-r0003-30k",
         "zhewan_rplace_r0003_n1d7_checkpoint-30000",
+    ),
+    "xichong_grasp_r0002": (
+        "Minth-Group/GR00T-G2-xichong-right-grasp-r0002-30k",
+        "xichong_rgrasp_r0002_n1d7_checkpoint-30000",
+    ),
+    "xichong_single_grasp": (
+        "Minth-Group/GR00T-G2-xichong-right-single-grasp-30k",
+        "xichong_rgrasp_n1d7_checkpoint-30000",
     ),
 }
 repo_id, bundle_name = packages[task]
@@ -145,25 +171,25 @@ PY
 每个推理包包含 `model/`、配套 `backbone/` 和路径配置脚本。模型服务器加载
 `model/`；`configure_local_paths.py` 只更新两个活动配置中的本地骨干路径，
 不改权重或归一化统计量。模型包搬迁后需再次执行该脚本。
-xichong 的 percentile 和 zhewan 的 min/max 配置必须各自保留。
+xichong 放置和早期抓取的 percentile、zhewan 放置和新抓取 r0002 的 min/max 配置必须各自保留。
 
 这些包不含 optimizer、scheduler、RNG，不能用于精确恢复原训练状态；
-原始数采数据和早期抓取模型也未在上述仓库发布。
+原始数采数据未在上述仓库发布。
 公开下载不改变许可：模型遵循资源页列出的 NVIDIA 许可，数据使用与再分发要求见数据集卡。
 这里的匿名下载说明只适用于上述发布仓库；重新获取 NVIDIA 上游基座时，仍按第 6.1 节办理其访问要求。
 
-### 2.6 未公开资源和云端历史路径
+### 2.6 原始数采、内部备份与云端历史路径
 
-以下是项目维护机上最后核对过的相对路径。它们**不随 GitHub 克隆，也不在第 2.5 节的 Hugging Face 归档中**。要使用新抓取 r0002，请从项目维护机取得完整目录，或由维护者另行发布资源；不要拿早期抓取或放置模型代替。
+以下是项目维护机上最后核对过的相对路径。**原始 episode 未公开**；重做筛查、清洗或转换时须向数据权利方另取。转换数据和四个推理模型已有第 2.5 节的下载入口；维护机上的同名目录只是内部备份，不必重复传输。不要拿早期抓取或放置模型代替新抓取 r0002。
 
 | 资源 | 维护机上的路径（相对本仓库） | 用途 |
 |---|---|---|
-| 新抓取转换集，400 train + 91 heldout，约 2.26 GiB | `agibot/gr00t_data/g2_194/xichong_right_grasp_r0002_400/` | 从基座训练、heldout 离线评估 |
-| 新抓取 30k 推理包，约 17 GiB | `agibot/models/xichong_rgrasp_r0002_n1d7_checkpoint-30000/` | 新抓取任务推理；必须包括 `model/` 和 `backbone/Cosmos-Reason2-2B/` |
+| 新抓取转换集，400 train + 91 heldout，约 2.26 GiB | `agibot/gr00t_data/g2_194/xichong_right_grasp_r0002_400/` | 内部备份；公开下载见第 2.5 节 |
+| 新抓取 30k 推理包，约 17 GiB | `agibot/models/xichong_rgrasp_r0002_n1d7_checkpoint-30000/` | 内部备份；公开下载见第 2.5 节 |
 | 新抓取已选原始 episode，491 条、21,896,397,988 字节 | `agibot/data/g2_194/xichong_right_grasp_r0002_job01/` | 重做该批数据清洗/转换；已有转换集训练无需获取 |
-| 早期抓取 30k 推理包 | `agibot/models/xichong_rgrasp_n1d7_checkpoint-30000/` | 早期 10.20.15.60 抓取流程；未公开 |
+| 早期抓取 30k 推理包 | `agibot/models/xichong_rgrasp_n1d7_checkpoint-30000/` | 内部备份；公开下载见第 2.5 节 |
 
-团队内部传输时，将示例 `SOURCE_HOST` 改成实际可访问的内部账户/主机，并确认其对上述目录有读取权限。以下命令**在接收机的仓库根目录**运行；路径中的 `Isaac-GR00T` 是维护机现有 checkout 名，不是接收机必须使用的目录名：
+若公开仓库暂时不可用而改走团队内部传输，将示例 `SOURCE_HOST` 改成实际可访问的内部账户/主机，并确认其对上述目录有读取权限。以下命令**在接收机的仓库根目录**运行；路径中的 `Isaac-GR00T` 是维护机现有 checkout 名，不是接收机必须使用的目录名：
 
 ```bash
 SOURCE_HOST="user@internal-host"
@@ -245,7 +271,7 @@ xichong 的旧清洗入口为 `scripts/clean_xichong_right_place_dataset.py`，�
 - EEF 为 XYZ＋Rot6D；Rot6D 使用旋转矩阵前两行。
 - 官方处理器按配置处理相对 EEF；夹爪为绝对 native radians，约 0 闭合、−0.785 张开。
 - 实时 GDK EEF 使用 base_link、米和 XYZW 四元数，不能重复反归一化或重复累加相对动作。
-- zhewan 使用 min/max，xichong 保留其训练时 percentile；统计量不能跨任务混用。
+- zhewan 放置和新 xichong 抓取 r0002 使用 min/max；xichong 放置及早期抓取保留各自训练时的 percentile。统计量不能跨任务混用。
 - 图像有损编码、数据结构检查或 loss 收敛，都不能单独保证实机成功。
 
 ### 4.1 数据处理完成后检查什么
@@ -412,7 +438,7 @@ zhewan 曾修复“CLI 设 min/max、实际基座 processor 仍用 percentile”
 改为本机 `backbone/Cosmos-Reason2-2B` 绝对路径。不要修改 `*.server-original.json`
 来代替活动配置，不改变 checkpoint 的统计量、归一化和动作语义。
 本机推理包不含 optimizer／scheduler／RNG，恢复训练需使用完整训练 checkpoint。
-从 Hugging Face 下载的两个放置包自带 `configure_local_paths.py`；内部复制的新抓取包
+从 Hugging Face 下载的四个推理包均自带 `configure_local_paths.py`；内部复制的旧包
 可用 `agibot/tools/configure_model_backbone.py <模型包目录>` 进行同样的路径修复。
 
 原始包内 manifest/README 的某些状态是下载或早期失败时的历史快照；最新真机结果以任务部署记录

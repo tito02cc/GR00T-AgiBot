@@ -21,12 +21,12 @@ GitHub 保存代码、任务配置、episode 名单、处理与训练脚本、�
 
 | 任务 | 训练/留出 | 转换数据 | 30k 推理模型 |
 |---|---:|---|---|
-| 早期 xichong 右臂抓取（10.20.15.60） | 300 / 另有历史评估集 | [公开数据归档](https://huggingface.co/datasets/Minth-Group/GR00T-AgiBot-data) | 未公开；本机历史包需内部传输 |
+| 早期 xichong 右臂抓取（10.20.15.60） | 300 / 另有历史评估集 | [公开数据归档](https://huggingface.co/datasets/Minth-Group/GR00T-AgiBot-data) | [公开模型包](https://huggingface.co/Minth-Group/GR00T-G2-xichong-right-single-grasp-30k) |
 | xichong 右臂放置 r0002 | 600 / 100 | [公开数据归档](https://huggingface.co/datasets/Minth-Group/GR00T-AgiBot-data) | [公开模型包](https://huggingface.co/Minth-Group/GR00T-G2-xichong-right-place-r0002-30k) |
 | zhewan 右臂放置 r0003 | 400 / 58 | [公开数据归档](https://huggingface.co/datasets/Minth-Group/GR00T-AgiBot-data) | [公开模型包](https://huggingface.co/Minth-Group/GR00T-G2-zhewan-right-place-r0003-30k) |
-| 新 xichong 右臂抓取 r0002（10.20.15.194） | 400 / 91 | **尚未公开**；本机转换集需内部传输 | **尚未公开**；本机推理包需内部传输 |
+| 新 xichong 右臂抓取 r0002（10.20.15.194） | 400 / 91 | [独立数据仓库](https://huggingface.co/datasets/Minth-Group/GR00T-G2-xichong-right-grasp-r0002-data) | [公开模型包](https://huggingface.co/Minth-Group/GR00T-G2-xichong-right-grasp-r0002-30k) |
 
-公开数据归档约 7.17 GiB，**不含**新抓取 r0002 的 400/91 条转换集。两份公开放置模型包各约 16.27 GiB。原始 episode 均未上传到 GitHub/Hugging Face；要重做清洗或转换，必须另取对应任务的完整原始数据。只运行某个现有放置模型的推理，不需要下载训练集。
+历史转换数据归档约 7.17 GiB，**不含**新抓取 r0002；该任务的 400/91 条转换集在独立仓库，约 2.26 GiB。四项任务的 30k 推理模型包分别下载。原始 episode 均未上传到 GitHub/Hugging Face；要重做清洗或转换，必须另取对应任务的完整原始数据。只运行现有模型的推理，不需要下载训练集。
 
 ## 最短准备流程
 
@@ -38,7 +38,7 @@ uv sync
 agibot/bin/groot-g2 doctor
 ```
 
-接着按 [操作手册 §2.5](agibot/README.md#25-从-hugging-face-下载) 下载所需的**转换数据**或**放置模型包**，并重新配置模型中的本地骨干路径。训练还需要 NVIDIA 的 GR00T-N1.7-3B 基座和 Cosmos-Reason2-2B 骨干，按 [操作手册 §6.1](agibot/README.md#61-基础模型) 获取；Cosmos 的许可访问需在 Hugging Face 完成。新抓取 r0002 的数据与模型目前只有内部副本，位置、获取方式及云端历史路径见 [操作手册 §2.6](agibot/README.md#26-未公开资源和云端历史路径)。**不能把 Git clone 或公开数据归档视为这项新抓取任务的完整交付。**
+接着按 [操作手册 §2.5](agibot/README.md#25-从-hugging-face-下载) 下载所选任务的**转换数据**或**推理模型包**，并重新配置模型中的本地骨干路径。训练还需要 NVIDIA 的 GR00T-N1.7-3B 基座和 Cosmos-Reason2-2B 骨干，按 [操作手册 §6.1](agibot/README.md#61-基础模型) 获取；Cosmos 的许可访问需在 Hugging Face 完成。原始 episode 的内部位置及云端历史路径见 [操作手册 §2.6](agibot/README.md#26-原始数采内部备份与云端历史路径)。**Git clone 不含任务数据或权重；转换数据也不能代替原始 episode 重新清洗。**
 
 开始训练前，选择任务配置，核对数据分集、模态、归一化、基座和输出路径，依次运行 `audit`、GPU `smoke`、`baseline`。完整命令见 [操作手册 §6](agibot/README.md#6-模型与训练)。真机推理需对应模型包、GPU 推理工作站和经本机 GDK 核对的机器人桥接，见 [操作手册 §7](agibot/README.md#7-g2-推理)。任务记录中的固定 IP/路径是历史环境，不会自动匹配另一台机器人或云服务器。
 
