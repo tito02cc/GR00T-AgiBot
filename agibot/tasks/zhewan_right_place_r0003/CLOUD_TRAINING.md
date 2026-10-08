@@ -189,4 +189,16 @@ checkpoint-25000 和 checkpoint-30000。Trainer 计时约 6 小时 57 分钟，�
 
 本机查看进度：`tmux attach -t groot_zhewan_download_30k`；日志和恢复脚本位于
 `agibot/local_reports/zhewan_prepare_20260910/download/`。该目录中的 `trainer_state.json`
-是从正式 checkpoint-30000 取回的 loss 原始记录。云端模型不删除。
+是从正式 checkpoint-30000 取回的 loss 原始记录。下载完成当时保留了云端模型；后续清理见下文。
+
+## 2026-09-20 云端旧数据与权重清理
+
+按用户要求，为新的 `xichong_right_grasp_r0002` 任务腾出空间，已删除云端本任务
+`datasets/zhewan_right_place_r0003_400/`、`checkpoint-25000/`、`checkpoint-30000/`
+以及输出根目录三个重复 safetensors 文件。释放约 61.2 GiB，数据盘可用约 108.6 GiB。
+
+清理前的小型元信息（含 loss / Trainer 记录、配置、processor、数据 meta）保存在
+`/root/gpufree-data/GR00T/archives/zhewan_r0003_before_cleanup_20260920.tgz`。
+本机原始/转换数据及 30k 推理模型未删除，GR00T/Cosmos 基座和训练环境也未修改。
+旧云端输出目录现在只有小型配置文件，不能再作为模型加载目录。
+优化器状态没有另行备份，因此不能从本机推理包恢复已删除的完整续训 checkpoint。

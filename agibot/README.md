@@ -4,6 +4,9 @@ G2 原始数采数据清洗、GR00T 格式转换、模型训练与真机推理�
 任务参数和实验结果见各任务目录；10.20.15.194 机器人的运行入口见
 [固定推理部署](deployments/g2_194/README.md)。以下命令均从仓库根目录执行。
 
+项目各任务的处理结果、训练数值、桥接演进与实机复盘汇总见
+[技术报告](docs/GR00T_TECHNICAL_REPORT.md)。
+
 ### 阅读顺序
 
 - 首次使用：第 1–3 节选择任务、准备资源、安装环境，第 5 节配置路径。
@@ -18,6 +21,7 @@ G2 原始数采数据清洗、GR00T 格式转换、模型训练与真机推理�
 | 早期右臂抓取 | `xichong_right_single_grasp/` | `xichong_right_single_grasp_300/` | `xichong_rgrasp_n1d7_checkpoint-30000/` |
 | xichong 右臂放置 | `xichong_right_place_r0002_job01/` | `xichong_right_place_r0002_train_600/` | `xichong_rplace_r0002_n1d7_checkpoint-30000/` |
 | zhewan 右臂放置 | `zhewan_right_place_r0003_job01/` | `zhewan_right_place_r0003_400/train/` | `zhewan_rplace_r0003_n1d7_checkpoint-30000/` |
+| xichong 右臂抓取 r0002（10.20.15.194） | 见[任务目录](tasks/g2_194/xichong_right_grasp_r0002/README.md) | `g2_194/xichong_right_grasp_r0002_400/train/` | `xichong_rgrasp_r0002_n1d7_checkpoint-30000/` |
 
 - **当前 10.20.15.194 机器人的两个放置任务：** 使用 [固定推理包](deployments/g2_194/README.md)。
   xichong 保留 `continuous_20260909`；zhewan 保留 `h16_collision_latched_20260911`。
@@ -58,6 +62,10 @@ G2 原始数采数据清洗、GR00T 格式转换、模型训练与真机推理�
   heldout 为 `gr00t_data/xichong_right_place_r0002_heldout_100/`。
 - zhewan 放置：`gr00t_data/zhewan_right_place_r0003_400/` 内分 `train/` 与 `heldout/`，
   分别 400／58 条。**训练路径指向 train 子目录**，不能把整个父目录或 heldout 当训练输入。
+- xichong 抓取 r0002（10.20.15.194）：
+  `gr00t_data/g2_194/xichong_right_grasp_r0002_400/` 内分 `train/` 与 `heldout/`，
+  分别 400／91 条；当前本机模型入口为 `models/xichong_rgrasp_r0002_n1d7_checkpoint-30000/model/`。
+  数据、训练和实机记录见[任务目录](tasks/g2_194/xichong_right_grasp_r0002/README.md)。
 - 早期抓取：训练使用 `gr00t_data/xichong_right_single_grasp_300/`，不是把同名前缀下
   full、pre_hard_gate 等历史目录全部合并。原始 636 条中筛选 300 条用于训练。
 - 推理模型包名称见第 1 节。每个包的 `model/` 是服务器加载入口，`backbone/` 是配套骨干。
@@ -84,7 +92,8 @@ G2 原始数采数据清洗、GR00T 格式转换、模型训练与真机推理�
 仅运行一个放置任务时，只需下载对应模型，不必下载数据或另一个任务的模型。
 
 资源按用途分开保存：GitHub 提供代码、配置、文档和演示视频；Hugging Face 数据仓库
-提供转换数据归档；两个模型仓库各自保存对应任务的权重、骨干和配置。
+提供前三项历史任务的转换数据归档；两个模型仓库各自保存对应放置任务的权重、骨干和配置。
+**新抓取 r0002 的转换数据和模型不在这些公开仓库里**，见第 2.6 节。
 模型仓库的 `model/`、`backbone/` 不要合并或改名，现有下载脚本和推理入口依赖这组结构。
 
 **转换数据：**
@@ -142,6 +151,34 @@ xichong 的 percentile 和 zhewan 的 min/max 配置必须各自保留。
 原始数采数据和早期抓取模型也未在上述仓库发布。
 公开下载不改变许可：模型遵循资源页列出的 NVIDIA 许可，数据使用与再分发要求见数据集卡。
 这里的匿名下载说明只适用于上述发布仓库；重新获取 NVIDIA 上游基座时，仍按第 6.1 节办理其访问要求。
+
+### 2.6 未公开资源和云端历史路径
+
+以下是项目维护机上最后核对过的相对路径。它们**不随 GitHub 克隆，也不在第 2.5 节的 Hugging Face 归档中**。要使用新抓取 r0002，请从项目维护机取得完整目录，或由维护者另行发布资源；不要拿早期抓取或放置模型代替。
+
+| 资源 | 维护机上的路径（相对本仓库） | 用途 |
+|---|---|---|
+| 新抓取转换集，400 train + 91 heldout，约 2.26 GiB | `agibot/gr00t_data/g2_194/xichong_right_grasp_r0002_400/` | 从基座训练、heldout 离线评估 |
+| 新抓取 30k 推理包，约 17 GiB | `agibot/models/xichong_rgrasp_r0002_n1d7_checkpoint-30000/` | 新抓取任务推理；必须包括 `model/` 和 `backbone/Cosmos-Reason2-2B/` |
+| 新抓取已选原始 episode，491 条、21,896,397,988 字节 | `agibot/data/g2_194/xichong_right_grasp_r0002_job01/` | 重做该批数据清洗/转换；已有转换集训练无需获取 |
+| 早期抓取 30k 推理包 | `agibot/models/xichong_rgrasp_n1d7_checkpoint-30000/` | 早期 10.20.15.60 抓取流程；未公开 |
+
+团队内部传输时，将示例 `SOURCE_HOST` 改成实际可访问的内部账户/主机，并确认其对上述目录有读取权限。以下命令**在接收机的仓库根目录**运行；路径中的 `Isaac-GR00T` 是维护机现有 checkout 名，不是接收机必须使用的目录名：
+
+```bash
+SOURCE_HOST="user@internal-host"
+mkdir -p agibot/gr00t_data/g2_194 agibot/models
+rsync -aP "${SOURCE_HOST}:/home/admin1/ct/Isaac-GR00T/agibot/gr00t_data/g2_194/xichong_right_grasp_r0002_400/" \
+  agibot/gr00t_data/g2_194/xichong_right_grasp_r0002_400/
+rsync -aP "${SOURCE_HOST}:/home/admin1/ct/Isaac-GR00T/agibot/models/xichong_rgrasp_r0002_n1d7_checkpoint-30000/" \
+  agibot/models/xichong_rgrasp_r0002_n1d7_checkpoint-30000/
+.venv/bin/python agibot/tools/configure_model_backbone.py \
+  agibot/models/xichong_rgrasp_r0002_n1d7_checkpoint-30000
+```
+
+`rsync` 仅是传输示例，不会自动创建源机器访问权限。传完后核对 train/heldout 下的 `data/`、`videos/`、`meta/`，以及模型包的 `model/`、`backbone/`；如需重做清洗，再单独传完整原始 episode。路径修复脚本只修改模型两个活动 JSON 中的本地骨干路径，不修改权重或训练统计量；搬迁模型后需重跑。
+
+云端 A100 数据盘的**最后记录**是 `/root/gpufree-data/GR00T/`：基座在 `models/GR00T-N1.7-3B/`、骨干在 `models/Cosmos-Reason2-2B/`；新抓取转换集在 `datasets/xichong_right_grasp_r0002_400/{train,heldout}/`，30k 训练输出在 `outputs/xichong_rgrasp_r0002_n1d7_e400_f10_h16_1xa10080_s30k_ckpt5k_v1/checkpoint-30000/`。云端 checkpoint 是训练产物，**不是**可直接搬到本地的完整推理包；它需要配套骨干和路径处理。云端当前连接与文件存在性未核实，访问主机、端口和凭据应向维护者获取，不写入公开仓库。zhewan 云端数据及旧 checkpoint 已于 2026-09-20 清理，不应再从该云端路径尝试下载；见[清理记录](tasks/zhewan_right_place_r0003/CLOUD_TRAINING.md)。
 
 ## 3. 安装与运行环境
 
@@ -202,7 +239,7 @@ torchcodec 0.8.0 配套 FFmpeg 4–7，不支持 FFmpeg 8。
 xichong 的旧清洗入口为 `scripts/clean_xichong_right_place_dataset.py`，保留作历史复现，
 新任务不直接照搬它的任务阈值。详细筛查／名单生成命令见母本说明。
 
-当前两任务的共同语义：
+已验证的右臂任务共同语义（归一化仍按各任务配置）：
 
 - 头部＋右腕图像，策略输入 RGB、640×480；10 Hz 动作，H16。
 - EEF 为 XYZ＋Rot6D；Rot6D 使用旋转矩阵前两行。
@@ -263,18 +300,29 @@ profile 中的初始位姿用于状态核对，不会自动执行复位。
 ### 6.1 基础模型
 
 从原始基座微调需要 GR00T-N1.7-3B 和 Cosmos-Reason2-2B。
-下载前配置模型访问权限。脚本
+先在 Hugging Face 完成 [Cosmos-Reason2-2B](https://huggingface.co/nvidia/Cosmos-Reason2-2B) 的许可访问，并为具有访问权限的账户准备只读 token。脚本
 [download_gr00t_n1d7_models.sh](training/download_gr00t_n1d7_models.sh)
-固定了模型版本，并包含权重 SHA 校验。
+固定了 [GR00T-N1.7-3B](https://huggingface.co/nvidia/GR00T-N1.7-3B) 与 Cosmos 的模型版本，并包含权重 SHA 校验。在**训练服务器**的完整仓库根目录、已有 `.venv` 的环境中，指定实际数据盘路径后运行：
 
-### 6.2 两任务训练入口
+```bash
+export CT_ROOT=/path/to/data-disk/GR00T
+read -rsp 'Hugging Face read token: ' HF_TOKEN; echo
+export HF_TOKEN
+bash agibot/training/download_gr00t_n1d7_models.sh
+unset HF_TOKEN
+```
+
+`CT_ROOT` 下会生成 `models/GR00T-N1.7-3B/`、`models/Cosmos-Reason2-2B/` 和下载缓存；训练 `.env` 中的基座/骨干路径必须指向实际位置。不要将 token 写入 `.env`、README、shell 命令历史或 Git 仓库。若已有经核对的基座与骨干，可复用，无须为每个任务重新下载。
+
+### 6.2 训练入口
 
 | 任务 | 配置文件 | 训练 wrapper |
 |---|---|---|
 | xichong 放置 | [训练参数](training/xichong_right_place_r0002_1xa10080.env) | `agibot/training/run_xichong_right_place_r0002_1xa10080.sh` |
 | zhewan 放置 | [训练参数](tasks/zhewan_right_place_r0003/train_1xa10080.env) | `agibot/tasks/zhewan_right_place_r0003/train.sh` |
+| xichong 抓取 r0002 | [训练参数](tasks/g2_194/xichong_right_grasp_r0002/train_1xa10080.env) | `agibot/tasks/g2_194/xichong_right_grasp_r0002/train.sh` |
 
-二者已记录的单卡配置均为 A100 80 GB、30,000 optimizer step、每 5,000 step 保存、
+三项已记录的单卡配置均为 A100 80 GB、30,000 optimizer step、每 5,000 step 保存、
 保留最新两份、每 10 step 记录 loss；单次 batch 16、累积 2，有效 batch 32。
 新任务可从这组参数开始，根据短测显存、loss 和评估结果调整。
 
@@ -292,17 +340,24 @@ bash agibot/tasks/zhewan_right_place_r0003/train.sh audit
 bash agibot/tasks/zhewan_right_place_r0003/train.sh smoke
 # 短测通过并决定开始新训练后：
 bash agibot/tasks/zhewan_right_place_r0003/train.sh baseline
+
+# 新 xichong 抓取 r0002（独立任务，不能与上述任务同时运行）
+bash agibot/tasks/g2_194/xichong_right_grasp_r0002/train.sh audit
+bash agibot/tasks/g2_194/xichong_right_grasp_r0002/train.sh smoke
+# 短测通过并决定开始新训练后：
+bash agibot/tasks/g2_194/xichong_right_grasp_r0002/train.sh baseline
 ```
 
 `audit` 检查数据、模型与配置，需要对应文件和清单，不执行训练 step。
 `smoke` 会实际占用 GPU；`baseline` 是新正式训练，不是自动从短测接着训练；
 断点续训使用 `resume` 并提供完整训练状态。
 
-历史 xichong 默认使用 SHA256SUMS；zhewan 使用文件名／字节数 inventory。
+历史 xichong 放置默认使用 SHA256SUMS；zhewan 和新抓取使用文件名／字节数 inventory。
 清单应在源数据验证完成后生成，并与数据集版本一起保存，用于检查后续复制是否完整。
 训练记录见
 [zhewan CLOUD_TRAINING](tasks/zhewan_right_place_r0003/CLOUD_TRAINING.md) 与
-[xichong STATUS](examples/xichong_right_place_r0002/STATUS.md)。
+[xichong STATUS](examples/xichong_right_place_r0002/STATUS.md)；新抓取另见
+[训练记录](tasks/g2_194/xichong_right_grasp_r0002/CLOUD_TRAINING.md)。
 
 ### 6.3 日志、保存和恢复
 
@@ -357,6 +412,8 @@ zhewan 曾修复“CLI 设 min/max、实际基座 processor 仍用 percentile”
 改为本机 `backbone/Cosmos-Reason2-2B` 绝对路径。不要修改 `*.server-original.json`
 来代替活动配置，不改变 checkpoint 的统计量、归一化和动作语义。
 本机推理包不含 optimizer／scheduler／RNG，恢复训练需使用完整训练 checkpoint。
+从 Hugging Face 下载的两个放置包自带 `configure_local_paths.py`；内部复制的新抓取包
+可用 `agibot/tools/configure_model_backbone.py <模型包目录>` 进行同样的路径修复。
 
 原始包内 manifest/README 的某些状态是下载或早期失败时的历史快照；最新真机结果以任务部署记录
 和 [固定包说明](deployments/g2_194/README.md) 为准，不将旧阶段字段当作最终验收结论。
@@ -380,7 +437,19 @@ zhewan 曾修复“CLI 设 min/max、实际基座 processor 仍用 percentile”
 另一位置用 `commands.py --robot-root` 指定。位置参数不能代替机器人适配：
 脚本仍需匹配实际 GDK、相机、EEF 和夹爪。完整步骤见固定包 README。
 
-### 7.3 已知边界
+### 7.3 10.20.15.194 机器人新抓取 r0002
+
+新抓取有独立任务入口，复用已验证的 arm/tool 联合 GDK 控制实现，**不使用放置任务的释放/回撤完成条件**。先按第 2.6 节取得对应模型包并修复本地骨干路径，再生成启动命令（此命令只打印，不启动服务）：
+
+```bash
+.venv/bin/python agibot/tasks/g2_194/xichong_right_grasp_r0002/inference.py commands \
+  --report agibot/local_reports/g2_194/xichong_right_grasp_r0002_live/new_run/inference.json
+```
+
+完整部署顺序、机器人端任务包装层、端口和执行结果见
+[新抓取桥接记录](tasks/g2_194/xichong_right_grasp_r0002/BRIDGE_DEPLOYMENT.md)。模型按完整 H16 块闭环输出接近、闭爪、抬升；软件的“闭爪且抬升稳定”只是一种反馈判据，不能代替现场确认是否真正抓起或进入卡槽。已记录的有限轮次里既有够不到/未入槽，也有现场确认抓起且入槽；不能据此推算稳定成功率。
+
+### 7.4 已知边界
 
 - 先预热模型，再显式激活控制；结束／异常后不自动复位、闭爪或松爪。
 - 现场确认工件状态、初始图像／位姿、运动范围和急停值守后才能执行。
@@ -397,12 +466,13 @@ zhewan 曾修复“CLI 设 min/max、实际基座 processor 仍用 percentile”
 
 | 目录／文件 | 用途 |
 |---|---|
-| [deployments/g2_194/](deployments/g2_194/README.md) | 两任务固定推理脚本、依赖、profile 与命令入口 |
+| [deployments/g2_194/](deployments/g2_194/README.md) | 两个放置任务的固定推理脚本、依赖、profile 与命令入口 |
 | [tasks/](tasks/README.md) | 按任务的数据名单、处理／训练配置与记录 |
 | [templates/right_place/](templates/right_place/README.md) | 新右臂放置任务的数据处理母本 |
 | [examples/](examples/) | 早期抓取与放置的历史实测说明，不自动替换现入口 |
 | [inference_videos/](inference_videos/README.md) | 两个独立演示视频，不是训练集 |
 | `data/`、`gr00t_data/`、`models/` | 原始数据、转换数据、模型权重 |
+| [tools/configure_model_backbone.py](tools/configure_model_backbone.py) | 内部复制推理包后的本地骨干路径修复 |
 | [training/](training/) | 下载、训练启动和检查工具 |
 | [scripts/](scripts/)／[tools/](tools/) | 转换、评估、适配与诊断脚本 |
 | [robot/](robot/README_G2_GROOT_BRIDGE.md) | 通用／历史机器人代码；日常运行以固定快照为准 |

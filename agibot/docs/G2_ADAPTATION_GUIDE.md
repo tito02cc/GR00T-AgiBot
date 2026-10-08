@@ -50,9 +50,13 @@ gripper state machine/runtime、测试和部署报告，再完成 shadow 与真�
 
 ## 4. GDK 控制路径
 
-当前基线要求一个持久 GDK owner。历史上两个 MotionPlan subscriber 会产生 UUID mismatch；
-MotionPlan 的亚毫米目标也存在跟踪残差，因此正式策略使用持久 50 Hz
-`EndEffectorPoseControl`，每个 10 Hz policy target 插值 5 次。
+当前已验证的 10.20.15.194 右臂放置基线要求一个持久 GDK owner；正式运行使用
+`Robot.trajectory_tracking_control` 的同一请求发布 `right_arm/ABS_POSE` 与
+`right_effector/ABS_JOINT`，每个 10 Hz policy target 插值为 5 次 50 Hz 联合 tick。
+早期分离式 `EndEffectorPoseControl`/夹爪 mux 是历史回退路径，不是这台机器现行的
+联合控制默认入口。历史 MotionPlan UUID mismatch 和亚毫米目标跟踪残差也不能
+直接等同于当前联合控制器故障。固定版本及各任务差异见
+[194 部署记录](../deployments/g2_194/README.md)。
 
 在新机器上依次验证：
 

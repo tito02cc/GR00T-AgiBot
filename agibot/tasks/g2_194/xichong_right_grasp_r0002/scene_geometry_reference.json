@@ -1,0 +1,16 @@
+{
+  "camera": "head_color",
+  "image_width": 640,
+  "image_height": 480,
+  "dictionary": "DICT_APRILTAG_36h11",
+  "tag_ids": [3, 4],
+  "training_source": "400 train episodes, raw head_color_000000.jpg per episode",
+  "training_episodes_with_both_tags": 400,
+  "training_spacing_px": {
+    "min": 168.04,
+    "median": 169.54,
+    "max": 170.04
+  },
+  "large_deviation_fraction": 0.05,
+  "interpretation": "Read-only apparent scene-scale diagnostic, not a motion target or safety gate"
+}

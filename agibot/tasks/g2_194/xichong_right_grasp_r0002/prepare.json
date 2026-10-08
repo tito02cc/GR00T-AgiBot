@@ -1,0 +1,13 @@
+{
+  "raw_root": "agibot/data/g2_194/xichong_right_grasp_r0002_job01",
+  "output_root": "agibot/gr00t_data/g2_194/xichong_right_grasp_r0002_400",
+  "report_dir": "agibot/local_reports/g2_194/xichong_right_grasp_r0002_prepare_20260920",
+  "source_inventory": "agibot/local_reports/g2_194/xichong_right_grasp_r0002_20260920/inventory.json",
+  "canonical_prompt": "Starting with the right gripper open, grasp the metal_workpiece with the right gripper, lift it at least 10 cm clear of the pickup position, and keep the single arm stable.",
+  "fps": 10,
+  "workers": 4,
+  "crf": 18,
+  "normalization_bounds": "minmax",
+  "expected_train_count": 400,
+  "expected_heldout_count": 91
+}
