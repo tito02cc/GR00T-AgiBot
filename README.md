@@ -17,6 +17,8 @@
 
 GitHub 保存代码、任务配置、episode 名单、处理与训练脚本、推理桥接、测试、文档和两段演示视频。`agibot/` **不是独立项目**：运行时还需要根目录的 `gr00t/`、`pyproject.toml` 和 `uv.lock`。克隆仓库不会取得原始 episode、转换后的 Parquet/MP4、基座权重、微调权重或本机运行报告；这些大文件被 `.gitignore` 排除。
 
+上游 `demo_data/` 中的部分 MP4/Parquet 由 Git LFS 管理。若要运行 NVIDIA 上游示例，需另装 `git-lfs` 并在克隆后执行 `git lfs pull`；Agibot 的数据和模型仍按下文从 Hugging Face 或内部存储取得，`git lfs pull` 不会下载它们。
+
 | 任务 | 训练/留出 | 转换数据 | 30k 推理模型 |
 |---|---:|---|---|
 | 早期 xichong 右臂抓取（10.20.15.60） | 300 / 另有历史评估集 | [公开数据归档](https://huggingface.co/datasets/Minth-Group/GR00T-AgiBot-data) | 未公开；本机历史包需内部传输 |
